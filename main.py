@@ -4,7 +4,7 @@ from openpyxl.chart import BarChart,Reference
 
 def existe(identificacion):
     wb = openpyxl.load_workbook('data/FIEC Graduados_Encuesta_2018_2020.xlsx')
-    alumnosFIEC = wb.get_sheet_by_name('FIEC')
+    alumnosFIEC = wb['FIEC']
     for row in alumnosFIEC.iter_rows():
         if row[5].value == identificacion:
             carrera = row[2].value
@@ -30,7 +30,7 @@ def set_respondido_computacion(identificacion):
     encabezado = True
     for celda in respondido:
         if encabezado == False:
-            if celda.value != 'SI' and alumnos[f"H{celda.row}"].value == identificacion:
+            if celda.value != 'SI' and alumnos[f"H{celda.row}"].value.split(' ')[0] == identificacion:
                 alumnos[f"P{celda.row}"] = 'SI'
                 celda.fill = PatternFill("solid", fgColor="92D050")
                 wb.save("data/FIEC_Computacion_2018_2020.xlsx")
@@ -47,7 +47,7 @@ def set_respondido(identificacion, carrera):
     encabezado = True
     for celda in respondido:
         if encabezado == False:
-            if celda.value != 'SI' and alumnos[f"F{celda.row}"].value == identificacion:
+            if celda.value != 'SI' and alumnos[f"F{celda.row}"].value.split(' ')[0] == identificacion:
                 alumnos[f"P{celda.row}"] = 'SI'
                 celda.fill = PatternFill("solid", fgColor="92D050")
                 wb.save("data/FIEC_%s_2018_2020.xlsx" % carrera)
@@ -205,11 +205,11 @@ def generar_resumen(fecha):
 
 archivo = 'Reporte 18-10-2022 FIEC.xlsx'
 wb = openpyxl.load_workbook('data/%s'%archivo)
-reporte = wb.get_sheet_by_name('Sheet1')
+reporte = wb['Sheet1']
 identificaciones = reporte['A']
 
 for i, celda in enumerate(identificaciones):
-        existe(celda)
+        existe(celda.value.split(' ')[0])
 
 fecha = archivo.split(' ')[1]
 generar_resumen(fecha)
